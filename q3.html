@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Analyzer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center p-8">
+  <h1 class="text-4xl font-bold text-teal-400 mb-6">Text Analyzer Tool</h1>
+
+  <textarea id="textInput" class="w-full max-w-4xl h-80 p-4 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-teal-400" placeholder="Paste your text here (minimum 10,000 words)..."></textarea>
+
+  <button id="translateButton" class="mt-4 bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded-lg transition duration-200">Analyze Text</button>
+
+  <div id="results" class="w-full max-w-4xl mt-6 bg-gray-800 p-6 rounded-lg shadow-lg text-white">
+    <!-- Results appear here -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const textInput = document.getElementById('textInput');
+      const translateButton = document.getElementById('translateButton');
+      const resultsDiv = document.getElementById('results');
+
+      translateButton.addEventListener('click', () => {
+        const text = textInput.value.trim();
+        if (text.length === 0) {
+          resultsDiv.innerHTML = '<p class="text-red-500">Please enter some text.</p>';
+          return;
+        }
+
+        // Check word count (approximate by splitting on whitespace)
+        const words = text.split(/\s+/).filter(word => word.length > 0);
+        if (words.length > 10000) {
+          resultsDiv.innerHTML = '<p class="text-red-500">Please enter text with at least 10,000 words.</p>';
+          return;
+        }
+
+        // Task 1: Calculate letters, words, spaces, newlines, and special symbols
+        const letters = (text.match(/[a-zA-Z]/g) || []).length;
+        const spaces = (text.match(/ /g) || []).length;
+        const newlines = (text.match(/\n/g) || []).length;
+        const specialSymbols = (text.match(/[^a-zA-Z0-9\s\n]/g) || []).length;
+
+        // Task 2: Tokenize and count pronouns
+        const pronouns = ['i', 'me', 'my', 'mine', 'you', 'your', 'yours', 'he', 'him', 'his', 'she', 'her', 'hers', 'it', 'its', 'we', 'us', 'our', 'ours', 'they', 'them', 'their', 'theirs'];
+        const pronounCounts = {};
+        words.forEach(word => {
+          const lowerWord = word.toLowerCase();
+          if (pronouns.includes(lowerWord)) {
+            pronounCounts[lowerWord] = (pronounCounts[lowerWord] || 0) + 1;
+          }
+        });
+
+        // Task 3: Tokenize and count prepositions
+        const prepositions = ['about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'at', 'before', 'behind', 'below', 'beneath', 'beside', 'between', 'by', 'down', 'during', 'for', 'from', 'in', 'inside', 'into', 'near', 'of', 'off', 'on', 'onto', 'out', 'over', 'past', 'through', 'to', 'toward', 'under', 'up', 'with', 'within', 'without'];
+        const prepositionCounts = {};
+        words.forEach(word => {
+          const lowerWord = word.toLowerCase();
+          if (prepositions.includes(lowerWord)) {
+            prepositionCounts[lowerWord] = (prepositionCounts[lowerWord] || 0) + 1;
+          }
+        });
+
+        // Task 4: Tokenize and count indefinite articles
+        const indefiniteArticles = ['a', 'an'];
+        const articleCounts = {};
+        words.forEach(word => {
+          const lowerWord = word.toLowerCase();
+          if (indefiniteArticles.includes(lowerWord)) {
+            articleCounts[lowerWord] = (articleCounts[lowerWord] || 0) + 1;
+          }
+        });
+
+        // Display results
+        let resultsHtml = `
+          <h3 class="text-2xl font-bold mb-4 text-green-400">Analysis Results</h3>
+          <p>Letters: ${letters}</p>
+          <p>Words: ${words.length}</p>
+          <p>Spaces: ${spaces}</p>
+          <p>Newlines: ${newlines}</p>
+          <p>Special Symbols: ${specialSymbols}</p>
+          <h4 class="text-xl font-bold mt-4 text-indigo-400">Pronoun Counts</h4>
+          ${Object.entries(pronounCounts).map(([pronoun, count]) => `<p>${pronoun}: ${count}</p>`).join('')}
+          <h4 class="text-xl font-bold mt-4 text-indigo-400">Preposition Counts</h4>
+          ${Object.entries(prepositionCounts).map(([preposition, count]) => `<p>${preposition}: ${count}</p>`).join('')}
+          <h4 class="text-xl font-bold mt-4 text-indigo-400">Indefinite Article Counts</h4>
+          ${Object.entries(articleCounts).map(([article, count]) => `<p>${article}: ${count}</p>`).join('')}
+        `;
+        resultsDiv.innerHTML = resultsHtml;
+      });
+    });
+  </script>
+</body>
+</html>
