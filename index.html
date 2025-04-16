@@ -377,7 +377,39 @@
       </a>
     </div>
   </section>
-
+  <script>
+    // Q2: Identify element type
+    function getElementType(element) {
+      const tag = element.tagName.toLowerCase();
+      const type = element.getAttribute('type');
+      const role = element.getAttribute('role');
+  
+      if (tag === 'img') return 'image';
+      if (tag === 'a') return 'hyperlink';
+      if (tag === 'select' || role === 'combobox') return 'drop-down';
+      if (tag === 'p' || tag === 'span' || tag === 'div') return 'text';
+      if (tag === 'button') return 'button';
+      if (tag === 'input') return `input-${type || 'text'}`;
+      return tag;
+    }
+  
+    // Q3: Log event
+    function logEvent(eventType, targetElement) {
+      const timestamp = new Date().toISOString();
+      const elementType = getElementType(targetElement);
+      console.log(`${timestamp} | ${eventType} | ${elementType}`);
+    }
+  
+    // Example usage: logging clicks
+    window.addEventListener('click', function (e) {
+      logEvent('click', e.target);
+    });
+  
+    // Example usage: logging mouseover (optional)
+    window.addEventListener('mouseover', function (e) {
+      logEvent('hover', e.target);
+    });
+  </script>
   <!-- Footer -->
   <footer>
     <p>
